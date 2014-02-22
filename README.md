@@ -8,4 +8,4 @@ Nest an element in a endless string of parent elements.
 <p>var nested = nest( target, 'li ul' );</p>
 
 <p>To nest an element and replace it immediately:</p>
-<p>nest( target, 'li ul', true );</p>
+<p>nest( target, 'li ul', 'replace' );</p>
