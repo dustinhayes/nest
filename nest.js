@@ -1,10 +1,10 @@
 var nest = (function () {
+    
     var deepest = function( element ) {
             var target;
 
-            if ( ! element.children.length ) {
+            if ( ! element.children.length )
                 return element;
-            }
 
             for ( target = element.firstElementChild;
                     target && target.firstElementChild;
@@ -15,27 +15,30 @@ var nest = (function () {
 
 
         buildNest = function( nestString ) {
-            var frag = document.createDocumentFragment(),
+            var fragment = document.createDocumentFragment(),
                 strArray = nestString.split(' '),
-                target;
-            
-            strArray.forEach(function( element, ind, arr ) {
-                element = document.createElement( element );
-                target = deepest( frag );
-                target.appendChild( element );
-            });
 
-            return frag;
+                build = function( element ) {
+                    var target = deepest( fragment );
+                    
+                    element = document.createElement( element );
+                    target.appendChild( element );
+                };
+            
+            strArray.forEach( build );
+
+            return fragment.children[0];
         },
 
 
         appendOriginal = function( element, nestString ) {
-            var nest = buildNest( nestString ),
-                target = deepest( nest );
+            var nested = buildNest( nestString ),
+                target = deepest( nested ),
+                elementCopy = element.cloneNode(true);
 
-            target.appendChild( element.cloneNode(true) );
+            target.appendChild( elementCopy );
 
-            return nest;
+            return nested;
         },
 
 
@@ -44,11 +47,29 @@ var nest = (function () {
         };
     
 
-    return function( element, nestString, toReplace ) {
-        if ( toReplace ) {
-            replaceOriginal( appendOriginal( element, nestString ), element );
-        }
+    return function nest( element, nestString, toReplace ) {
+        var replace = ( toReplace === 'replace' ),
+            length = element.length,
+            result = [];
 
-        return appendOriginal( element, nestString );
+            nestElement = function( element ) {
+                var nested = appendOriginal( element, nestString );
+                
+                if ( replace )
+                    replaceOriginal( nested, element );
+
+                if ( length )
+                    result.push( nested );
+
+                return nested;
+            };
+
+        if ( length ) {
+            [].forEach.call( element, nestElement );
+            return result;
+        } else {
+            return nestElement( element );
+        }
     };
+
 }());
