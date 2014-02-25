@@ -33,30 +33,20 @@ var nest = (function () {
 
         appendOriginal = function( element, nestString ) {
             var nested = buildNest( nestString ),
-                target = deepest( nested ),
-                elementCopy = element.cloneNode(true);
+                target = deepest( nested );
 
-            target.appendChild( elementCopy );
+            target.appendChild( element );
 
             return nested;
-        },
-
-
-        replaceOriginal = function( replacement, current ) {
-            current.parentElement.replaceChild( replacement, current );
         };
     
 
-    return function nest( element, nestString, toReplace ) {
-        var replace = ( toReplace === 'replace' ),
-            length = element.length,
+    return function nest( element, nestString ) {
+        var length = element.length,
             result = [];
 
             nestElement = function( element ) {
                 var nested = appendOriginal( element, nestString );
-                
-                if ( replace )
-                    replaceOriginal( nested, element );
 
                 if ( length )
                     result.push( nested );
